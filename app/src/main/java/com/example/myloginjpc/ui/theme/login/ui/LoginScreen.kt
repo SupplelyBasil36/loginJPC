@@ -1,6 +1,5 @@
 package com.example.myloginjpc.ui.theme.login.ui
 
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,42 +11,45 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.runtime.*
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myloginjpc.R
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(viewModel: LoginViewModel) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp),
     ) {
-        Login(Modifier.align(Alignment.TopCenter))
+        Login(Modifier.align(Alignment.TopCenter), viewModel)
     }
 }
 
 @Composable
-fun Login(modifier: Modifier) {
+fun Login(modifier: Modifier, viewModel: LoginViewModel) {
+
+    val email: String by viewModel.email.observeAsState(initial = "")
+
     Column(modifier = modifier) {
         HeaderImage(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier.padding(16.dp))
-        EmailField()
+        EmailField(email, {viewModel.onLoginChanged(it)})
         Spacer(Modifier.padding(16.dp))
         PasswordField()
         Spacer(Modifier.padding(8.dp))
@@ -106,10 +108,11 @@ fun PasswordField() {
 }
 
 @Composable
-fun EmailField() {
+fun EmailField(email: String, onTextFieldChanged:(String) -> Unit) {
+
     TextField(
-        value = "",
-        onValueChange = {},
+        value = email,
+        onValueChange = onTextFieldChanged{it},
         modifier = Modifier.fillMaxWidth(),
         placeholder = {
             Text(
