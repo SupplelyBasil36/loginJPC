@@ -18,8 +18,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,12 +42,17 @@ fun LoginScreen(viewModel: LoginViewModel) {
 @Composable
 fun Login(modifier: Modifier, viewModel: LoginViewModel) {
 
+    //Observalo como un estado
+    /*
+    *  Esto nos permite enganchar nuestras vistas al livedata del viewmodel
+    * */
     val email: String by viewModel.email.observeAsState(initial = "")
+    val password: String by viewModel.password.observeAsState(initial = "")
 
     Column(modifier = modifier) {
         HeaderImage(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier.padding(16.dp))
-        EmailField(email, {viewModel.onLoginChanged(it)})
+        EmailField(email, { viewModel.onLoginChanged(it, password) })
         Spacer(Modifier.padding(16.dp))
         PasswordField()
         Spacer(Modifier.padding(8.dp))
@@ -67,7 +70,7 @@ fun LoginButton() {
             .height(48.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFFF4303),
-            disabledContainerColor = Color(0xFFFF78058),
+            disabledContainerColor = Color(0xFFFF7805),
             contentColor = Color.White,
             disabledContentColor = Color.White
         )
@@ -108,11 +111,11 @@ fun PasswordField() {
 }
 
 @Composable
-fun EmailField(email: String, onTextFieldChanged:(String) -> Unit) {
+fun EmailField(email: String, onTextFieldChanged: (String) -> Unit) {
 
     TextField(
         value = email,
-        onValueChange = onTextFieldChanged{it},
+        onValueChange = { onTextFieldChanged(it) },
         modifier = Modifier.fillMaxWidth(),
         placeholder = {
             Text(
